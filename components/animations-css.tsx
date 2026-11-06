@@ -52,10 +52,19 @@ export function AnimationsCSS() {
   async function afficherCarte(visible: boolean) {
     // TODO Afficher: Pour afficher rien de spécial à faire, mais assurez-vous que la classe "fade-in" est appliquée à la carte.
     // Regardez plus bas pour utiliser la propriété className directement sur l'élément!
-    
+    if(visible){
+      setCardVisible(true);
+    }
+    else{
+    const card = document.getElementById(firstCardId);
+
+    card?.classList.add("fade-out");
+
     // TODO: Cacher: Pour cacher, il faut d'abord ajouter la classe "fade-out" à la carte, puis attendre 500ms pour que l'animation se termine avant de mettre à jour l'état
-    
+    await new Promise(resolve => setTimeout(resolve, 500));
     setCardVisible(visible);
+    }
+    
   }
 
   const attackingCardsIds = ["playerCardId", "opponentCardId"];
@@ -64,11 +73,27 @@ export function AnimationsCSS() {
     // TODO: Il faut obtenir l'élément du DOM correspondant à la carte du côté spécifié 
     // Les ids utilisés sont dans l'array attackingCardsIds juste au-dessus de cette fonction.
     // Il y a deux animations possibles : "player-attack" et "opponent-attack"
+      const card = document.getElementById(`${side}CardId`);
+      if(card){
+        let animationClass=`${side}-attack`;
+      card.classList.remove(animationClass);
+      void card.offsetWidth;
+      card.classList.add(animationClass);
+      }
+      
   }
   
   function activatePower() {
     // TODO: Il faut obtenir l'élément du DOM correspondant à la carte et au pouvoir sélectionnés
     // puis lui appliquer la classe "power-active" pour déclencher l'animation.
+
+    const power = document.getElementById(`${selectedCardId}_${selectedPowerId}`);
+    if(!power){
+       return;
+    }
+    power.classList.remove("power-active");
+    void power.offsetWidth;
+    power.classList.add("power-active");
   }
 
   // Il y a peu de choses à faire dans le reste du code, il y a 2 TODOs à compléter
@@ -93,7 +118,7 @@ export function AnimationsCSS() {
             </div>
             <div className="demo-stage hand-stage" aria-label="Démonstration de l’apparition des cartes">
               <div className="card-row">
-                {cardVisible && <PlayingCard id={firstCardId} /* TODO: On peut mettre la classe d'animation fade-in ici, comme ça l'objet l'a dès qu'il existe*//>}
+                {cardVisible && <PlayingCard id={firstCardId} className="fade-in" /* TODO: On peut mettre la classe d'animation fade-in ici, comme ça l'objet l'a dès qu'il existe*//>}
               </div>
             </div>
           </article>
@@ -149,7 +174,7 @@ export function AnimationsCSS() {
             <div className="demo-stage mana-stage" aria-label={`Cartes jouables avec ${mana} manas`}>
               <div className="card-row">
                 {costCards.map((card) => (
-                  <PlayingCard key={card.id} id={card.id} manaCost={card.cost} /*TODO ajouter le className pour jouer l'animation *//>
+                  <PlayingCard key={card.id} id={card.id} manaCost={card.cost} className={card.cost <=mana ?"card-can-be-played":""}/*TODO ajouter le className pour jouer l'animation *//>
                 ))}
               </div>
             </div>
@@ -213,6 +238,7 @@ export function AnimationsCSS() {
                   <PlayingCard
                     id="simple_c42"
                     powerIds={powerCards[0].powerIds}
+                    className="flip-scale-2-ver-right"
                     // TODO: Ajouter la classe d'animation pour que la carte se retourne
                   />
                 )}
@@ -262,6 +288,7 @@ export function AnimationsCSS() {
                           key={card.id}
                           id={`draw_${card.id}`}
                           powerIds={card.powerIds}
+                          className="flip-scale-2-ver-right"
                           // TODO: Ajouter la classe d'animation pour que la carte se retourne
                         />
                       );
@@ -276,6 +303,7 @@ export function AnimationsCSS() {
                           key={`${card.id}-${drawnCount}`}
                           id={`draw_${card.id}`}
                           powerIds={card.powerIds}
+                          className="slide-right"
                           // TODO: Ajouter la classe d'animation pour que la carte se retourne déplace vers la droite
                         />
                       );
